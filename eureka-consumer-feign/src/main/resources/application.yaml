@@ -7,3 +7,6 @@ eureka:
       defaultZone: http://localhost:7000/eureka/,http://peer1:7001/eureka/,http://peer2:7002/eureka/
 server:
   port: 9001
+feign:
+  hystrix:
+    enabled: true
