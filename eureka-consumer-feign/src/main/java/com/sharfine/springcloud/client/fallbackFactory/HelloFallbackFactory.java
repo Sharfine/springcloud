@@ -4,7 +4,6 @@ import com.sharfine.springcloud.client.HelloClient;
 import feign.hystrix.FallbackFactory;
 import org.springframework.stereotype.Component;
 
-@Component
 public class HelloFallbackFactory implements FallbackFactory<HelloClient> {
 
     @Override

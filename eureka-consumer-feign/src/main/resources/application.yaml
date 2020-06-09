@@ -1,6 +1,6 @@
 spring:
   application:
-    name: eureka-consumer
+    name: eureka-consumer-fegin
 eureka:
   client:
     service-url:
@@ -10,3 +10,8 @@ server:
 feign:
   hystrix:
     enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

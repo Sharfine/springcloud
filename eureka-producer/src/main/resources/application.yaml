@@ -8,3 +8,11 @@ eureka:
 
 server:
   port: 8000
+feign:
+  hystrix:
+    enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
