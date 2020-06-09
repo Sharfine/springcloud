@@ -5,7 +5,11 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/zhaoyibo/springcloud # 配置git仓库的地址
-          search-paths: config-repo # git仓库地址下的相对地址，可以配置多个，用,分割。
+          uri: https://github.com/sharfine/springcloud.git # 配置git仓库的地址
+          search-paths: config # git仓库地址下的相对地址，可以配置多个，用,分割。
 server:
   port: 12000
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7000/eureka/,http://peer1:7001/eureka/,http://peer2:7002/eureka/
