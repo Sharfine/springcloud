@@ -1,6 +1,6 @@
 spring:
   application:
-    name: eureka-consumer-fegin
+    name: eureka-consumer-feign
 eureka:
   client:
     service-url:
