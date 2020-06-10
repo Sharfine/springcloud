@@ -1,12 +1,12 @@
 spring:
   application:
     name: eureka-producer
-
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:7000/eureka/,http://peer1:7001/eureka/,http://peer2:7002/eureka/
+  cloud:
+    bus:
+      trace:
+        enabled: true
+      enabled: true
 
 server:
   port: 8000
+

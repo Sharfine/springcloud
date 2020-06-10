@@ -1,11 +1,13 @@
 spring:
-  application:
-    name: config-server
   cloud:
     config:
-      server:
-        git:
-          uri: https://github.com/sharfine/SpringCloudConfig # 配置git仓库的地址
+      #uri: http://localhost:12000 # 配置中心的具体地址，即 config-server
+      name: config-client # 对应 {application} 部分
+      profile: dev # 对应 {profile} 部分
+      label: master # 对应 {label} 部分，即 Git 的分支。如果配置中心使用的是本地存储，则该参数无用
+      discovery:
+        enabled: true
+        service-id: config-server
     bus:
       enabled: true
       trace:
@@ -15,8 +17,6 @@ spring:
     port: 5672
     username: guest
     password: guest
-server:
-  port: 12000
 eureka:
   client:
     service-url:
