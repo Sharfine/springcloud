@@ -5,8 +5,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/sharfine/springcloud.git # 配置git仓库的地址
-          search-paths: tree/master/config # git仓库地址下的相对地址，可以配置多个，用,分割。
+          uri: https://github.com/sharfine/SpringCloudConfig # 配置git仓库的地址
 server:
   port: 12000
 eureka:
