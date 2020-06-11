@@ -1,5 +1,7 @@
 package com.sharfine.springcloud.filter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -9,13 +11,16 @@ import reactor.core.publisher.Mono;
 
 public class TokenFilter implements GlobalFilter, Ordered {
 
+    final static Logger logger = LoggerFactory.getLogger(TokenFilter.class);
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String token = exchange.getRequest().getQueryParams().getFirst("token");
         if (token == null || token.isEmpty()) {
+            logger.info("没有token");
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            System.out.println("没有token");
             return exchange.getResponse().setComplete();
+
         }
         return chain.filter(exchange);
     }
