@@ -19,6 +19,11 @@ public class HelloController {
 
     @GetMapping("/hello")
     public String hello(@RequestParam String name) {
+       /* try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
         return "Hello, " + name;
     }
 

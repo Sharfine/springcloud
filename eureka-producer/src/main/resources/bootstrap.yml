@@ -1,4 +1,8 @@
 spring:
+  security:
+    user:
+      name: 'client'
+      password: 'client'
   cloud:
     config:
       #uri: http://localhost:12000 # 配置中心的具体地址，即 config-server
@@ -21,8 +25,12 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:7000/eureka/,http://peer1:7001/eureka/,http://peer2:7002/eureka/
+  instance:
+    metadata-map:
+      user.name: ${spring.security.user.name}
+      user.password: ${spring.security.user.password}
 management:
   endpoints:
     web:
       exposure:
-        include: bus-refresh
+        include: "*"

@@ -1,12 +1,6 @@
 spring:
   application:
     name: eureka-producer
-  cloud:
-    bus:
-      trace:
-        enabled: true
-      enabled: true
 
 server:
   port: 8000
-

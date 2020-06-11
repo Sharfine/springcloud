@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: sba-server
+  security:
+    user:
+      name: 'admin'
+      password: 'admin'
+
+server:
+  port: 18080
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7000/eureka/,http://peer1:7001/eureka/,http://peer2:7002/eureka/
+  instance:
+    metadata-map:
+      user.name: ${spring.security.user.name}
+      user.password: ${spring.security.user.password}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
