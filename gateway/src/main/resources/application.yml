@@ -1,6 +1,10 @@
 spring:
   application:
     name: cloud-gateway
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
   cloud:
     gateway:
       discovery:
@@ -17,6 +21,12 @@ spring:
             - Path=/eureka-consumer-feign/**  # 断言，路径相匹配的进行路由*/
           filters:
             - StripPrefix=1 #转发的时候在微服务中要去掉前一层网关的地址
+            - name: RequestRateLimiter
+              args:
+                key-resolver: '#{@remoteAddrKeyResolver}'
+                redis-rate-limiter.replenishRate: 1 #令牌桶每秒填充平均速率。
+                redis-rate-limiter.burstCapacity: 1 #令牌桶容量。
+
             - AddResponseHeader=X-Response-Default-Foo, Default-Bar
 
 server:
@@ -28,3 +38,8 @@ eureka:
 logging:
   level:
     org.springframework.cloud.gateway: debug
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

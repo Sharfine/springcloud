@@ -1,8 +1,11 @@
 package com.sharfine.springcloud;
 
+import com.sharfine.springcloud.config.RemoteAddrKeyResolver;
 import com.sharfine.springcloud.filter.ElapsedGatewayFilterFactory;
+import com.sharfine.springcloud.filter.RateLimitByCpuGatewayFilter;
 import com.sharfine.springcloud.filter.RateLimitByIpGatewayFilter;
 import com.sharfine.springcloud.filter.TokenFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -29,6 +32,9 @@ public class GatewayApplication {
         return new ElapsedGatewayFilterFactory();
     }
 
+    @Autowired
+    private RateLimitByCpuGatewayFilter rateLimitByCpuGatewayFilter;
+
     @Bean
     public RouteLocator customerRouteLocator(RouteLocatorBuilder builder) {
         // @formatter:off
@@ -37,6 +43,7 @@ public class GatewayApplication {
                 .route(r -> r.path("/throttle/eureka-consumer-feign/**")
                         .filters(f -> f.stripPrefix(2)
                                 .filter(new RateLimitByIpGatewayFilter(10, 1, Duration.ofSeconds(1)))
+                                .filter(rateLimitByCpuGatewayFilter)
                                 .addResponseHeader("X-Response-Default-Foo", "Default-Bar"))
                         .uri("lb://EUREKA-CONSUMER-FEIGN")
                         .order(0)
@@ -44,6 +51,11 @@ public class GatewayApplication {
                 )
                 .build();
         // @formatter:on
+    }
+
+    @Bean(name = RemoteAddrKeyResolver.BEAN_NAME)
+    public RemoteAddrKeyResolver remoteAddrKeyResolver() {
+        return new RemoteAddrKeyResolver();
     }
 
 }

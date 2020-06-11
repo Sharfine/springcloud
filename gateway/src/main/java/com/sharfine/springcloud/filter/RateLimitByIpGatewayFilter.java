@@ -53,7 +53,6 @@ public class RateLimitByIpGatewayFilter implements GatewayFilter, Ordered {
 
         log.info("IP: " + ip + "，TokenBucket Available Tokens: " + bucket.getAvailableTokens());
         if (bucket.tryConsume(1)) {
-            log.info("acquired");
             return chain.filter(exchange);
         } else {
             exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
