@@ -3,6 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
+
+
     <modules>
         <module>eureka-consumer</module>
         <module>eureka-consumer-feign</module>
@@ -10,7 +12,8 @@
         <module>eureka-server</module>
         <module>hystrix-dashboard</module>
         <module>sba-server</module>
-
+        <module>config-server</module>
+        <module>gateway</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -27,6 +30,7 @@
     <properties>
         <java.version>1.8</java.version>
         <spring-cloud.version>Hoxton.SR5</spring-cloud.version>
+        <dockerfile.plugin.version>1.4.13</dockerfile.plugin.version>
     </properties>
 
     <dependencies>
@@ -70,6 +74,7 @@
         </dependencies>
     </dependencyManagement>
 
+
     <build>
         <plugins>
             <plugin>
@@ -77,6 +82,79 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>dockerfile-maven-plugin</artifactId>
+                    <version>${dockerfile.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>build-image</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>tag-image</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>tag</goal>
+                            </goals>
+                            <configuration>
+                                <tag>latest</tag>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>push-image-latest</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>push</goal>
+                            </goals>
+                            <configuration>
+                                <tag>latest</tag>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>push-image-version</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>push</goal>
+                            </goals>
+                            <configuration>
+                                <tag>${project.version}</tag>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <skip>true</skip>
+                        <tag>latest</tag>
+                        <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+
+                        <!-- 对于直系子项目, 默认向上取父项目
+                             对于子项目的子项目, 需在对应子项目重写以下几个配置
+                             可参考 mall-monitor/boot-admin/pom.xml
+                             -->
+
+                        <repository>
+                            registry.cn-hangzhou.aliyuncs.com/sharfine/hello/_${project.name}
+                        </repository>
+
+                        <username>sharfine</username>
+                        <!--在容器镜像服务控制台"设置Registry登录密码"-->
+                        <password>W123456789</password>
+
+                        <!--suppress UnresolvedMavenProperty -->
+                        <contextDirectory>${project.basedir}</contextDirectory>
+                        <dockerfile>${project.basedir}/docker/Dockerfile</dockerfile>
+                        <buildArgs>
+                            <JAR_FILE>${project.artifactId}/target/${project.build.finalName}.jar</JAR_FILE>
+                        </buildArgs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
 </project>
