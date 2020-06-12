@@ -1,0 +1,32 @@
+version: '3.3'
+services:
+  eureka-service-local:
+    hostname: localhost             # 指定hostname
+    image: 4be779cfcef7
+    networks:
+      - spring-cloud
+    ports:
+      - "7000:7000"
+
+  service-client-peer1:
+    hostname: peer1
+    image: 4be779cfcef7
+    networks:
+      - spring-cloud
+    ports:
+      - "7001:7001"
+    environment:
+      - spring.profiles.active=peer1
+  service-client-peer2:
+    hostname: peer1
+    image: 4be779cfcef7
+    networks:
+      - spring-cloud
+    ports:
+      - "7002:7002"
+    environment:
+      - spring.profiles.active=peer2
+
+networks:
+  spring-cloud:
+

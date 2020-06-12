@@ -1,0 +1,187 @@
+version: '3.7'
+services:
+
+  redis:
+    image: redis:alpine
+    command: "redis-server --requirepass ${REDIS_PASSWORD}"
+    ports:
+      - "${REDIS_EXPOSE_PORT}:6379"
+    networks:
+      - spring-cloud
+    deploy: &default_deploy_config
+      labels:
+        project: "cloud"
+        deploy.version: "${VERSION:-latest}"
+        deploy.time: "2020-4-1 00:00"
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 10
+        window: 120s
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == worker]
+      update_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        order: stop-first
+      rollback_config:
+        parallelism: 1
+        delay: 20s
+        failure_action: pause
+        order: stop-first
+    logging: &default_logging_config
+      options:
+        max-size: "100m"
+        max-file: "10"
+
+  rabbitmq:
+    image: registry.cn-hangzhou.aliyuncs.com/abmatrix/rabbit
+    ports:
+      - "${RABBITMQ_EXPOSE_PORT}:5672"
+      - "15672:15672"
+    environment:
+      - "RABBITMQ_DEFAULT_USER=${RABBITMQ_USERNAME}"
+      - "RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}"
+    networks:
+      - spring-cloud
+    deploy: *default_deploy_config
+    logging: *default_logging_config
+
+  mongodb:
+    image: mongo:4
+    ports:
+      - "${MONGODB_EXPOSE_PORT}:27017"
+    environment:
+      - "MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}"
+      - "MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}"
+    volumes:
+      - "${MONGODB_NATIVE_DB_PATH}:/data/db"
+    networks:
+      - spring-cloud
+    deploy:
+      <<: *default_deploy_config
+      placement:
+        constraints: [node.role == manager]
+    logging: *default_logging_config
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      - "MYSQL_USER=${MYSQL_USERNAME}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}"
+    ports:
+      - "${MYSQL_EXPOSE_PORT}:3306"
+    volumes:
+      - "${MYSQL_NATIVE_DB_PATH}:/var/lib/mysql"
+    networks:
+      - spring-cloud
+    deploy:
+      <<: *default_deploy_config
+      placement:
+        constraints: [node.role == manager]
+    logging: *default_logging_config
+
+  #  elasticsearch:
+  #    image: elasticsearch:6.4.0
+  #    environment:
+  #      - "cluster.name=${ES_CLUSTER_NAME}"
+  #      - "discovery.type=single-node"
+  #      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #    volumes:
+  #      - "{ES_PLUGINS_PATH}:/usr/share/elasticsearch/plugins"
+  #      - "{ES_DATA_PATH}:/usr/share/elasticsearch/data"
+  #    ports:
+  #      - "${ES_CLUSTER_EXPOSE_PORT}:9200"
+  #    networks:
+  #      - spring-cloud
+  #    deploy: *default_deploy_config
+  #    logging: *default_logging_config
+  #
+  #  kibana:
+  #    image: kibana:6.4.0
+  #    environment:
+  #      - "elasticsearch.hosts=http://${ES_CLUSTER_NODES_HOST}:${ES_CLUSTER_NODES_PORT}"
+  #    ports:
+  #      - "${KIBANA_EXPOSE_PORT}:5601"
+  #    networks:
+  #      - spring-cloud
+  #    deploy: *default_deploy_config
+  #    logging: *default_logging_config
+
+  sentinel:
+    image: bladex/sentinel-dashboard:1.7.1
+    ports:
+      - "${SENTINEL_EXPOSE_PORT}:8858"
+    networks:
+      - spring-cloud
+    deploy: *default_deploy_config
+    logging: *default_logging_config
+
+  nacos:
+    image: nacos/nacos-server:latest
+    environment:
+      - "MODE=standalone"
+      - "PREFER_HOST_MODE=hostname"
+      - "NACOS_AUTH_ENABLE=false"
+      - "NACOS_SERVER_PORT=${NACOS_PORT}"
+      - "SPRING_DATASOURCE_PLATFORM=${NACOS_DATASOURCE_PLATFORM}"
+      - "MYSQL_SERVICE_HOST=${MYSQL_HOST}"
+      - "MYSQL_SERVICE_PORT=${MYSQL_PORT}"
+      - "MYSQL_SERVICE_USER=${MYSQL_USERNAME}"
+      - "MYSQL_SERVICE_PASSWORD=${MYSQL_PASSWORD}"
+      - "MYSQL_SERVICE_DB_NAME=nacos"
+    ports:
+      - "${NACOS_PORT}:${NACOS_PORT}"
+    networks:
+      - spring-cloud
+    deploy: *default_deploy_config
+    logging: *default_logging_config
+
+  monitor:
+    image: "${DOCKER_REPO}/abmatrix-mall-boot-admin:${VERSION:-latest}"
+    env_file:
+      - .env
+    ports:
+      - "${MONITOR_PORT}:${MONITOR_PORT}"
+    networks:
+      - spring-cloud
+    deploy: *default_deploy_config
+    logging: *default_logging_config
+
+  gateway:
+    image: "${DOCKER_REPO}/abmatrix-mall-mall-gateway:${VERSION:-latest}"
+    env_file:
+      - .env
+    ports:
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+    networks:
+      - spring-cloud
+    deploy: *default_deploy_config
+    logging: *default_logging_config
+
+  seata:
+    image: seataio/seata-server:1.1.0
+    restart: always
+    environment:
+      - "STORE_MODE=db"
+      - "SERVER_NODE={{.Task.Slot}}"
+      - "SEATA_CONFIG_NAME=file:/root/seata-config/registry"
+    volumes:
+      - "${SEATA_CONFIG_PATH}:/root/seata-config/registry.conf"
+    ports:
+      - "${SEATA_EXPOSE_PORT}:8091"
+    networks:
+      - spring-cloud
+    deploy:
+      <<: *default_deploy_config
+      placement:
+        constraints: [node.role == manager]
+    logging: *default_logging_config
+
+networks:
+  spring-cloud:
+

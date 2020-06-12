@@ -24,6 +24,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.11</version>
@@ -65,7 +69,8 @@
           <contextDirectory>${project.parent.basedir}</contextDirectory>
           <dockerfile>${project.parent.basedir}/docker/Dockerfile</dockerfile>
           <buildArgs>
-            <JAR_FILE>${project.parent.artifactId}/${project.artifactId}/target/${project.build.finalName}.jar
+            <JAR_FILE>
+              ${project.artifactId}/target/${project.build.finalName}.jar
             </JAR_FILE>
           </buildArgs>
         </configuration>
