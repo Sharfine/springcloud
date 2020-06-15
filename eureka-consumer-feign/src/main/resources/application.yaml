@@ -4,7 +4,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:7000/eureka/,http://peer1:7001/eureka/,http://peer2:7002/eureka/
+      defaultZone: http://192.168.32.20:7000/eureka/,http://192.168.32.20:7001/eureka/,192.168.32.20://peer2:7002/eureka/
 server:
   port: 9001
 feign:
