@@ -1,0 +1,42 @@
+version: '3.3'
+services:
+  config-service:
+    hostname: localhost             # 指定hostname
+    image: 818928f44096
+    networks:
+      - spring-cloud
+    ports:
+      - "12000:12000"
+
+  eureka-consumer-feign:
+    hostname: localhost
+    image: 13c36643d3fc
+    networks:
+      - spring-cloud
+    ports:
+      - "9001:9001"
+  eureka-producer:
+    hostname: localhost
+    image: 5f3b1d1f1019
+    networks:
+      - spring-cloud
+    ports:
+      - "8000:8000"
+  gateway:
+    hostname: localhost
+    image: 44bd48c6f125
+    networks:
+      - spring-cloud
+    ports:
+      - "10000:10000"
+  sba-server:
+    hostname: localhost
+    image: 39d3d53b87b7
+    networks:
+      - spring-cloud
+    ports:
+      - "18080:18080"
+
+networks:
+  spring-cloud:
+

@@ -30,7 +30,7 @@
     <properties>
         <java.version>1.8</java.version>
         <spring-cloud.version>Hoxton.SR5</spring-cloud.version>
-        <dockerfile.plugin.version>1.4.13</dockerfile.plugin.version>
+        <dockerfile.plugin.version>1.4.3</dockerfile.plugin.version>
     </properties>
 
     <dependencies>
@@ -142,10 +142,13 @@
                         <password>W123456789</password>
 
                         <!--suppress UnresolvedMavenProperty -->
+                        <!--上下文目录-->
                         <contextDirectory>${project.basedir}</contextDirectory>
-                        <dockerfile>${project.basedir}/docker/Dockerfile</dockerfile>
+                        <!--dockerfile指定目录，好像不行，必须放在根目录-->
+                       <!--<dockerfile>${project.basedir}\docker\Dockerfile</dockerfile>-->
+                        <!--jar文件目录-->
                         <buildArgs>
-                            <JAR_FILE>${project.artifactId}/target/${project.build.finalName}.jar</JAR_FILE>
+                            <JAR_FILE>${project.artifactId}\target\${project.build.finalName}.jar</JAR_FILE>
                         </buildArgs>
                     </configuration>
                 </plugin>

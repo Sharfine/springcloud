@@ -70,7 +70,7 @@
             registry.cn-hangzhou.aliyuncs.com/sharfine/hello/${project.parent.artifactId}-${project.artifactId}
           </repository>
           <contextDirectory>${project.parent.basedir}</contextDirectory>
-          <dockerfile>${project.parent.basedir}/docker/Dockerfile</dockerfile>
+         <!-- <dockerfile>${project.parent.basedir}/docker/Dockerfile</dockerfile>-->
           <buildArgs>
             <JAR_FILE>
               ${project.artifactId}/target/${project.build.finalName}.jar
